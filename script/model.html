@@ -1,0 +1,362 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript">
+(function(){
+var NULL = window.NULL = {};
+var MODELEDOBJECT = "__YIY_MODEL__(*%'$><\"";
+var GONCHANGEEVTKEY = "__YIY_BIND_GONCHANGE__>`\"}&^";
+var EVENTFUNCSKEY = "__YIY__EVENT_FUNCS__*)_^%%!~@\":><";
+var funCluster = function(){
+	var fns = [];
+	var evt = function(){
+		var returnValue;
+		for(var i=0,j=fns.length;i<j;i++){
+			returnValue = fns[i].apply(this,arguments);
+			if(returnValue===false)break;
+			
+		}
+		return returnValue;
+	}
+	evt.add = function(fn){
+		fns.push(fn);return this;
+	}
+	evt.remove=function(fn){
+		var ns = [];
+		for(var i=0,j=fns.length;i<j;i++){
+			var f = fns[i];
+			if(f!==fn) ns.push(f);
+		}
+		fns = ns;
+		return this;
+	}
+	evt.count = function(){return fns.length;}
+	evt.clear = function(){fns = [];}
+	return evt;
+}
+
+var createEvent = funCluster.createEvent = function(){
+	var funcs;
+	var evt =  function(func,remove){
+		if(!funcs) return this;
+		if(func==null) {
+			if(remove)funcs.remove(remove);
+			else funcs = evt[EVENTFUNCSKEY] = null;
+			return this;
+		}
+		if(!funcs)funcs = evt[EVENTFUNCSKEY] = funCluster();
+		funcs.add(func);
+		return this;
+	}
+	
+	return evt;
+}
+var genProperty = function(model,name,actualModel){
+	var onChange;
+	var property = function(val){
+		if(val===undefined) return actualTarget[name];
+		return setValue(val);
+	}
+	property.model = model;
+	property.name = name;
+	property.actualModel = actualModel;
+	property.getValue = function(){ return actualTarget[name];}
+	var setValue = property.setValue = function(value){
+		
+		var oldValue = actualTarget[name];
+		var newValue = (value === NULL)?undefined:(value[]?);
+		actualTarget[name] = newValue;
+		if(onChange) onChange.call(property,newValue,oldValue);
+		var gOnChange = model.onchange[EVENTFUNCSKEY];
+		if(gOnChange)gOnChange.call(model,name,newValue,oldValue);
+		
+		return this;
+	}
+	property.toString = function(){ return actualModel[name];}
+	
+	property.change = createEvent();
+}
+var getOrGenModel = function(actualModel){
+	//空跟不是object的都没有办法生成Model
+	if(actualModel===undefined || actualModel===null) return null;
+	var t = typeof(actualModel);
+	if(t!='object' || t!='function') return null;
+	
+	//已经生成过了就不要再生成了
+	var exists = actualModel[MODELEDOBJECT];
+	if(exists) return exists;
+	
+	//生成一个Model
+	var model = function(name, value){
+		if(value===undefined) return actualModel[name];
+		var prop = props[name];
+		if(prop) prop.setValue(value);
+		return model;
+	}
+	model[MODELEDOBJECT] = model;
+	model.__actual = actualModel;
+	model.__parent = parentModel;
+	var isArray = model.__isArray = actualModel.push && actualModel.pop && actualModel.length!==undefined;
+	var props = {};	
+	var getProp = model.__prop = function(name,addNotExisted){
+		var prop = props[name];
+		if(prop) return prop;
+		if(addNotExisted) {
+			var prop = props[name] = genProperty(this,name,actualModel);
+			if(!this[name])this[name]= prop;
+			var addprop = model.__addprop[EVENTFUNCSKEY];
+			addprop.call(model,name,prop);
+			return prop;
+		}
+	}
+	var getValue = model.__get = function(name){
+		return actualModel[name];
+	}
+	var setValue = model.__set = function(name, value){
+		var prop = getProp(name,true);prop.setValue(name,value);
+		return this;
+	}
+	var getByPathInfo = function(pathInfo,parent,isGetProp){
+		//第一个取出来
+		var name = pathInfo.shift();
+		if(name===undefined) return;
+		var value = parent[name];
+		if(pathInfo.length == 0) {
+			if(isGetProp){
+				//生成property
+				var model = getOrGenModel(parent);
+				//即使原先没有也要生成一个
+				return model.__getProp(name,true);
+			}else return value;
+		}
+		var t = typeof(value);
+		//路径还没找完就没有可查找的对方，结束
+		if(t!=='object' && t!=='function')return;
+		if(isGetProp.push)isGetprop.push({model:parent,prop:name});
+		return getByPathInfo(pathInfo,value,isGetProp);
+	}
+	model.__pathValue = function(path,isProp){
+		if(typeof(path)==='string') path = path.split('.');
+		return getByPathInfo(path,actualModel,isProp);
+	}
+	
+	model.__setPathValue = function(root,pathInfo,value){
+		if(!root) return model;
+		var obj = root , len = pathInfo.length-1;
+		for(var i=0,j=len;i<j && obj;i++){
+			obj = root[pathInfo[i]];
+		}
+		obj[pathInfo[len]] = value;
+		return model;
+		
+	}
+	var onChange;
+	model.__change = createEvent();
+	
+	model.__addprop = createEvent();
+	
+	for(var n in actualModel){
+		var prop = props[n] = genProperty(this,n,actualModel);
+		if(!model[n]) model[n] = prop;
+	}
+	actualModel[MODELEDOBJECT] = model;
+	return model;
+}
+window.$model = getOrGenModel;
+})();
+(function(){
+var $M = window.$model;
+if(!$M){alert("Need import YIY.Model first");}
+var BINDOBJECTTOKENKEY ="YIY_BINDER_{]';.?|`\"'";
+var attachEvent = function(elem,evtName, func){
+	$(elem).bind(evtName,func);
+}
+var detechEvent = function(elem,evtName,func){
+	$(elem).unbind(elem,evtName,func);
+}
+var getData = function(elem,name){
+	return $(elem).data(name);
+}
+
+var Bind = function(elem,model){
+	var exists = elem[BINDOBJECTTOKENKEY];
+	if(exists) return exists.model(model);
+	var root = {model:$M(model)};
+	var dh = $M(root);
+	dh.__set("$",dh).__set("$$",dh);
+	dh.model.change(function(val,newval){
+		if(val!==newval) root.$ = root.$$ = newval;
+	});
+	bindElement(elem,dataHolder);
+	elem[BINDOBJECTTOKENKEY] = dataHolder;	
+	return dataHolder;
+}
+var dataHolder = function(parentHolder, model){
+	var dh = $M({
+		model : model,
+		"$" : parentHolder.$(),
+		"$$" : parentHolder.$$()
+	});
+	dh.parentHolder = parentHolder;
+	
+}
+
+var bindElement = function(elem,dataHolder){
+	if(elem[BINDOBJECTTOKENKEY]) throw "already binded."; 
+	var value = getData(elem,"bind");
+	if(value){bindValue(elem,dataHolder,value);return;}
+	
+	var data = getData(elem,"bind-data");
+	dataHolder = data?bindData(elem , dataHolder, data):dataHolder;
+	var nodes = elem.childNodes;
+	for(var i=0,j=nodes.length;i<j;i++){
+		var node = nodes[i];
+		if(node.tagName) bindElement(node,dataHolder);
+	}
+}
+
+var bindData = function(elem,dataHolder,path){
+	var  getHoldData = function(){
+		
+		var model= dataHolder.model();
+		if(!model)return;
+		var prop = model.__pathValue(path, routes);
+		if(!prop)return;
+		//最后一个是要设置的属性，更改不需要清空重新绑定
+		for(var i=0,j=routes.length-1;i<j ;i++){
+			var pa= routes[i],name = pa.name , model = $model(pa.model);
+			(function(name,model){
+				var handler = function(value,oldValue){
+					if(value==oldValue)return;
+					subHolder.model = 	getHoldData;			
+				}
+				var mprop = model.__prop(name,true);
+				mprop.__change(handler);
+				pa.unbindprop = function(){mprop.__change(null,handler);}
+			})(name,model);
+		}
+		var data = prop.getValue();
+		subHolder.model = function(){return data;}
+		return data;
+	}
+	var subHolder = {
+		model : getHoldData,
+		root : dataContainer.root,
+		parent : dataContainer
+	}
+	return subHolder;
+}
+var bindValue = function(elem,dataHolder,path){
+	var triggle = getData(elem,"bind-triggle") || "blur";
+	var tagName = elem.tagName;
+	if(tagName=="SELECT"){
+		bindInputElement(elem,dataHolder,path,triggle,
+			function(elem){return elem.options[elem.selctedIndex].value;},
+			function(elem,value){
+				var opts = elem.options;
+				for(var i=0,j=opts.length;i<j;i++){
+					var opt = opts[i];
+					if(value == opt.value) opt.selected = "selected";
+					else opt.removeAttribute('selected');
+				}
+			}
+		);return;
+	}else if(tagName=='input'){
+		var type = elem.type;
+		if((type==='radio' || type==='checkbox')){
+			bindInputElement(elem,dataHolder,path,triggle,
+				function(elem){if( elem.getAttribute("checked"))elem.value;},
+				function(elem,value){
+					if(value===true || value==elem.value) elem.checked = "checked";
+					else  elem.removeAttribute("checked");
+				}
+			);
+		}
+		return;
+	}else if(tagName == "textarea"){}
+	else {
+		bindInputElement(elem,dataHolder,path,triggle,
+			function(elem){return elem.innerHTML;},
+			function(elem,value){elem.innerHTML = value;}
+		);
+		return ;
+	}
+		
+	bindInputElement(elem,dataHolder,path,triggle,
+		function(elem){return elem.value;},
+		function(elem,value){elem.value = value;}
+	);
+		
+}
+//elem 元素
+//dataHolder 数据容器
+//path , 路径
+// getValue 获取Value的方法
+//triggle 触发器
+var bindInputElement = function(elem,dataHolder,path,triggle,getValue,setValue){
+	var  _getProp = function(){
+		var model= dataHolder.model();
+		if(!model) return;
+		var routes;
+		var prop = model.__pathValue(path, routes);
+		if(!prop)return;
+		//最后一个是要设置的属性，更改不需要清空重新绑定
+		for(var i=0,j=routes.length-1;i<j ;i++){
+			var pa= routes[i],name = pa.name , model = $model(pa.model);
+			(function(name,model){
+				var handler = function(value,oldValue){
+					if(value==oldValue)return;
+					//清空现有绑定
+					prop.__change(null, propertyChangeHandler);
+					for(var i=0,j=routes.length-1;i<j ;i++){
+						var pa= routes[i];
+						pa.unbindprop();
+					}
+					getProp = _getProp;				
+				}
+				var mprop = model.__prop(name,true);
+				mprop.__change(handler);
+				pa.unbindprop = function(){mprop.__change(null,handler);}
+			})(name,model);
+		}
+		getProp = function(){return prop;}
+		//model的值变化后反映到element中去
+		var propertyChangeHandler = function(newValue){setValue(elem,newValue);}
+		prop.__change(propertyChangeHandler);
+		return prop;
+	}
+	var getProp = __getProp;
+
+	//element的值变化后反映到model中
+	attachEvent(elem,triggle,function(){
+		var prop = getProp();
+		if(prop) prop.setValue(getValue(elem));
+	});
+	getProp();
+}
+
+
+window.$bind =bind;
+})();
+</script>
+<body>
+<form id="form"  data-bind-data="User">
+	<div>
+		<label>id</label>
+		<input type="text" data-bind="Id" />
+	</div>
+	<div>
+		<label>Username</label>
+		<input type="text" data-bind="Username" />
+	</div>
+	<input type="button" value="查看结果" data-bind-click="" />
+</form>
+
+<script type="text/javascript">
+
+</script>
+</body>
+</html>

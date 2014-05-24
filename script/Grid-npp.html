@@ -1,0 +1,351 @@
+
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta fieldname="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta fieldname="description" />
+	<meta fieldname="author" /><title></title>
+
+	<script src="jquery.js" type="text/javascript"></script>
+</head>
+<body>
+<div>
+	<a href="" id="selAccountor">选择财务处理人</a>
+	<span id="defaultAccountorName"></span>
+	<input type="hidden" id="defaultAccountorID" value="" />
+</div>
+<div id='PRItemsContainer'>
+<table class="table" id="PRItemTb__Page" border="1">
+    <thead>
+        <tr class="grid-columns">
+            <th><input type="checkbox"  data-grid-column="ID" /><a href="" class='insert'><span class="glyphicon glyphicon-tags"></span></a></th>
+            <th data-grid-column="MaterialCode">Code</th>
+            <th data-grid-column="Description">Description</th>
+            <th data-grid-column="Specification">Spec</th>
+            <th data-grid-column="Quantity"><span class='required'>*</span></span>Qty</th>
+            <th data-grid-column="Unit">Unit</th>
+            <th data-grid-column="Currency">Currency</th>
+            <th data-grid-column="Price">Price</th>
+            <th data-grid-column="StandardPrice">StandardPrice</th>
+            <th data-grid-column="Total">Total</th>
+            <th data-grid-column="StandardTotal">StandardTotal</th>
+            <th data-grid-column="ProjectCode">ProjectCode</th>
+            <th data-grid-column="BudgetCode">BudgetCode</th>
+            <th data-grid-column="FactoryCode">FactoryCode</th>
+            <th data-grid-column="FT">F/T</th>
+            <th data-grid-column="AssertCategory1">AssertCategory1 </th>
+            <th data-grid-column="AssertCategory1">AssertCategory2 </th>
+            <th data-grid-column="Remarks">Remarks</th>
+        </tr>
+        
+    <tbody class="grid-rows">
+        
+        
+         <tr itemid="a1d6b1e7-0313-43c2-a342-00b8305ca45f">
+            <td><input type="hidden" fieldname="ID" value="a1d6b1e7-0313-43c2-a342-00b8305ca45f" />
+				<input type="checkbox"  class="sel" />
+			</td>
+            <td>MC-001              </td>
+            <td></td>
+            <td></td>
+            <td>12</td>
+            <td></td>
+            <td>
+                <select fieldname="Currency">
+                    
+                        <option value="RMB" selected='selected'>RMB</option>
+                    
+                        <option value="USD" >USD</option>
+                    
+                </select>
+            </td>
+            <td>20.0000</td>
+            <td>0.0000</td>
+            <td>240.0000</td>
+            <td>0.0000</td>
+            <td>PJC-1</td>
+            <td>BC-1</td>
+            <td>
+                <select fieldname="Factory">
+                    
+                        <option value="F001                " >工厂A</option>
+                    
+                        <option value="F002                " >工厂B</option>
+                    
+                </select>
+            </td>
+            <td>
+                <select fieldname="FT">
+                        <option value="0" selected='selected'>F</option>
+                        <option value="1" selected='selected'>T</option>
+                </select>
+            </td>
+            <td>
+                <select fieldname="c1">
+                    
+                        <option value="fc05ddd2-1f47-4e3d-af76-606991e3f5ec" selected='selected'>一级资产</option>
+                    
+                        <option value="6e881581-74c5-48ac-a88b-f8830f56f43c" >一级资产</option>
+                    
+                </select>
+            </td>
+            <td>
+                <select fieldname="c2">
+                    
+                        <option value="74e464c3-0ec1-49bb-8482-c10d4a04bffd" selected='selected'>二级资产</option>
+                    
+                </select>
+            </td>
+            <td>for test</td>
+			<td class='accountor'><input type="hidden" fieldname="AccountorId" value="" />
+                <a href="">abc</a>
+            </td>
+        </tr>
+        
+         <tr itemid="a2d6b1e7-0313-43c2-a342-00b8305ca45f">
+            <td><input type="hidden"  fieldname="ID" value="a2d6b1e7-0313-43c2-a342-00b8305ca45f" /><input type="checkbox"  class="sel" /></td>
+            <td>MC-002              </td>
+            <td></td>
+            <td></td>
+            <td>13</td>
+            <td></td>
+            <td>
+                <select fieldname="Currency">
+                    
+                        <option value="RMB" >RMB</option>
+                    
+                        <option value="USD" >USD</option>
+                    
+                </select>
+            </td>
+            <td>21.0000</td>
+            <td>0.0000</td>
+            <td>273.0000</td>
+            <td>0.0000</td>
+            <td>PJC-2</td>
+            <td>BC-2</td>
+            <td>
+                <select fieldname="Factory">
+                    
+                        <option value="F001                " >工厂A</option>
+                    
+                        <option value="F002                " >工厂B</option>
+                    
+                </select>
+            </td>
+            <td>
+                <select fieldname="FT">
+                        <option value="0" >F</option>
+                        <option value="1" >T</option>
+                </select>
+            </td>
+            <td>
+                <select fieldname="c1">
+                    
+                        <option value="fc05ddd2-1f47-4e3d-af76-606991e3f5ec" selected='selected'>一级资产</option>
+                    
+                        <option value="6e881581-74c5-48ac-a88b-f8830f56f43c" >一级资产</option>
+                    
+                </select>
+            </td>
+            <td>
+                <select fieldname="c2">
+                    
+                        <option value="74e464c3-0ec1-49bb-8482-c10d4a04bffd" selected='selected'>二级资产</option>
+                    
+                </select>
+            </td>
+            <td>for test2</td>
+			<td class='accountor'><input type="hidden" fieldname="AccountorId" value="" />
+                <a href="">abc</a>
+            </td>
+        </tr>
+        
+         <tr itemid="a3d6b1e7-0313-43c2-a342-00b8305ca45f">
+            <td><input type="hidden" fieldname="ID" value="a3d6b1e7-0313-43c2-a342-00b8305ca45f" /><input type="checkbox"  class="sel" /></td>
+            <td>MC-003              </td>
+            <td></td>
+            <td></td>
+            <td>26</td>
+            <td></td>
+            <td>
+                <select fieldname="Currency">
+                    
+                        <option value="RMB" selected='selected'>RMB</option>
+                    
+                        <option value="USD" >USD</option>
+                    
+                </select>
+            </td>
+            <td>20.0000</td>
+            <td>0.0000</td>
+            <td>520.0000</td>
+            <td>0.0000</td>
+            <td>PJC-3</td>
+            <td>BC-3</td>
+            <td>
+                <select fieldname="Factory">
+                    
+                        <option value="F001                " >工厂A</option>
+                    
+                        <option value="F002                " >工厂B</option>
+                    
+                </select>
+            </td>
+            <td>
+                <select>
+                        <option value="0" >F</option>
+                        <option value="1" >T</option>
+                </select>
+            </td>
+            <td>
+                <select fieldname="c1">
+                    
+                        <option value="fc05ddd2-1f47-4e3d-af76-606991e3f5ec" >一级资产</option>
+                    
+                        <option value="6e881581-74c5-48ac-a88b-f8830f56f43c" selected='selected'>一级资产</option>
+                    
+                </select>
+            </td>
+            <td>
+                <select fieldname="c2">
+                    
+                        <option value="74e464c3-0ec1-49bb-8482-c10d4a04bffd" selected='selected'>二级资产</option>
+                    
+                </select>
+            </td>
+            <td>for test3</td>
+			<td class='accountor'><input type="hidden" fieldname="AccountorId" value="" />
+                <a href="">abc</a>
+            </td>
+        </tr>
+        
+    </tbody>
+    
+    <tfoot>
+        
+    </tfoot>
+</table>
+</div>
+
+<script type="text/javascript">
+var blocker = $("<div style='position:absolute;background-color:black;width:100%;height:100%;display:none;' />").css("opacity",0.5);
+var container = $("#PRItemsContainer").prepend(blocker).css('position',"relative");
+
+var tb ,trs;
+function init(){
+	var tb = $("#PRItemTb__Page");
+	var trs = $("tbody>tr",tb);
+	initTr(trs);
+}
+
+function initTr(trs){
+	$("input,select" ,trs).focus(function(){
+		if(tick) clearTimeout(tick);
+		var tr =  $(this).closest("tr");
+		if(lastTr && lastTr[0]!=tr[0])sendData(lastTr);
+		lastTr = tr;
+	}).blur(function(){
+		if(tick) clearTimeout(tick);
+		tick = setTimeout(function(){
+			if(lastTr) {sendData(lastTr); lastTr = null;}
+		},200);
+	});
+}
+init();
+var lastTr;
+var ajax = function(cb){
+	cb.complete(true);
+}
+var sendData = function(tr){
+	var blockTr = $("<tr class='waiting'><td colspan='30'>uploading</td></tr>");
+	blockTr.height(tr.height());
+	blockTr.insertBefore(tr);
+	var hideTr = lastTr.hide();
+	var data = {};
+	$("input,select" , tr).each(function(){var name; if(name = $(this).attr("fieldname"))data[name] = $(this).val();});
+	
+	ajax({
+		"method":"post",
+		"data" : data,
+		"url" : "../InternalApprove/PRItem.aspx?action=update&__sformat__=json",
+		complete : function(ret){
+			if(ret.error) tr.addClass('error');
+			else tr.removeClass("error");
+			tr.show();
+			blockTr.remove();
+		}
+	});
+	
+}
+var checkUpdate = function(){
+	var tr =  $(this).closest("tr");
+	if(!lastTr) lastTr = tr;
+	if(lastTr[0]!=tr[0])sendData(lastTr);
+	lastTr = tr;
+}
+var tick;
+
+var applyAccountor = function(data){
+	var accountorId= $("#defaultAccountorID").val(data.ID).val();
+	var accountorName = $("#defaultAccountorName").html(data.Name).html();
+	var ids = [];var sels = $("tbody>tr input.sel",tb);
+	sels.each(function(){
+		if(this.checked){
+			ids.push(this.value);
+		}
+	});
+	$.ajax({
+		url : "PRItem.aspx?ids=" + ids.join(",") + "&aid=" + accountorId,
+		success : function(){
+			sels.each(function(){
+			//alert($(this).attr("checked"));
+				if(this.checked){
+					var tr = $(this).closest("tr");
+					var atd = $("td.accountor",tr);
+					var aa = $("a",atd);
+					aa.html(accountorName);
+				}
+			});
+			block(false);
+		}
+	});
+}
+var resizer = function(){
+	blocker.width(tb.width()).height(tb.height());
+}
+var block = function(noblock){
+	if(noblock===false){
+		blocker.hide("fast");
+		$(window).unbind("resize",resizer);
+	}else{
+		blocker.width(tb.width()).height(tb.height());
+		blocker.show("fast");
+		$(window).bind("resize",resizer);
+		
+	}
+}
+
+$("#selAccountor").click(function(){
+	block();
+	setTimeout(function(){
+		applyAccountor({ID:20,Name:"yiy"});
+	},3000);
+	return false;
+});
+var buildHTML = function(mcode){}
+var addRows = function(mcodes){
+	for(var i=0,j=mcodes.length;i<j;i++){
+		var tr = $(buildHTML);
+		initTr(tr);
+		$("tbody",tb).append(tr);
+	}
+}
+</script>
+
+
+
+</body>
+</html>

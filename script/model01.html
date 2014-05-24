@@ -1,0 +1,62 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript" src="jquery.js"></script>
+	<script type="text/javascript" src="assert.js"></script>
+	<script type="text/javascript" src="model.js"></script>
+<script type="text/javascript">
+
+(function(window,document,undefined){
+
+
+
+var user = {
+	id: 13,
+	Signname : "yiy"
+};
+var m_user = $M(user);
+
+m_user[$M].change(function(name,val,old,isNew){
+	old = val;
+});
+m_user.id[$M].change(function(val,old,isNew){
+	old = val;
+});
+var id = m_user.id();
+
+for(var n in m_user){
+	m_user[n]("change");
+}
+
+m_user[$M].setValue("gender","sex");
+m_user[$M].change("id",function(name,val){
+	name = val;
+});
+m_user[$M].change("gender",function(name,val){
+	name = val;
+});
+
+var name = m_user[$M].getValue("Signname");
+m_user[$M].setValue("id","12");
+
+var expr = m_user[$M].expr("id");
+expr(14);
+var expr =  m_user[$M].expr("id,gender");
+expr('haha');
+
+var expr = m_user[$M].expr("(id,gender)=>id+'-'+gender");
+var exprChange = function(val,j){
+	val = i;
+}
+expr[$M].change(exprChange);
+var val = expr();
+m_user.id(34);
+var i=1;
+})(window,document);
+</script>
+</head>
+<body>
+</body>
+</html>

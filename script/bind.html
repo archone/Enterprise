@@ -1,0 +1,190 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript" src="jquery.js"></script>
+	<script type="text/javascript" src="assert.js"></script>
+	<script type="text/javascript" src="model.js"></script>
+<script type="text/javascript">
+
+(function(window,document,undefined){
+var elemData = function(elem,name){return $(elem).data(name);}
+var attach = function(elem,evtName ,func){$(elem).bind(evtName,func);}
+var detech = function(elem,evtName ,func){$(elem).unbind(evtName,func);}
+var BIND = "__YIY__BIND_|”`8234";
+var bind = function(elem,data){
+	var root = $M({target : data});
+	bindElement(elem , new RelBinder(elem,root.target));
+}
+var bindElement = function(elem,relBinder){	
+	var path = elemData(elem,"bind");
+	if(!path){
+		var relPath = elemData(elem, "bind-data");
+		relBinder = new RelBinder(elem,relPath);
+	}
+	var children = elem.childNodes;
+	for(var i=0,j=children.length;i<j;i++){
+		var child = children[i];
+		if(child.tagName) bindElement(child,relBinder);
+	}
+	
+}
+var genFinder = bind.genFinder= function(path, relBinder){
+	var paths = path.split(".");
+	//优化不带路径的
+	if(paths.length==1 && path!="$" && path!="$$"){
+		return function(relBinder,$M){return relBinder.model[path];};
+	}
+	
+	var code = "var model = relBinder.model;\n";
+	var closer = [];
+	
+	for(var i=0,j=paths.length;i<j;i++){
+		var propName = paths[i];
+		if(propName=="$") {code += "if(relBinder=relBinder.$){model=relBinder.model;\n"; closer.push("}");}
+		else if(propName=="$$"){ code = "relBinder = relBinder.$$;model = relBinder.model;\n"; }
+		else {code += "if(model && (prop = model."+propName+")){ \n model = $M(prop.getValue());\n"; closer.push("}");}
+	}
+	code += ";return prop;";
+	code += closer.join("");
+	return new Function("relBinder","$M",code);
+};
+var RelBinder = function(elem,path,relBinder){
+	if(relBinder){
+		this.$ = relBinder;
+		this.$$ = relBinder.$$;
+		this.findProp = genFinder(path, relBinder);
+	}else{
+		this.$$ = this;
+		this.findProp = path;
+	}
+	var self = this,model,prop,binders = [];
+	var onValueChange = function(val,old){self.bind(this,val);}
+	this.bind = function(bindProp,bindModel){
+		//解除原先的属性的绑定
+		if(prop) prop.change(null,onValueChange);
+		//替换新的绑定的属性
+		prop = bindProp;
+		//监听属性变化
+		prop.change(onValueChange);
+		for(var i=0,j=binders.length;i<j;i++){
+			var binder = binders[i];
+			//获取当前绑定的值
+			model = this.model = $M(bindModel);
+			//子binder自己负责查找到自己绑定的属性
+			var prop = binder.findProp(this,$M);
+			//把该属性绑定到子binder上去
+			if(prop)binder.bind(prop,bindModel);
+		}
+	}
+	
+	this.add = function(binder){
+		binders.push(binder); return this;
+	}
+}//--/RelBinder
+
+var ValueBinder = function(elem,path,relBinder){
+	var self = this,prop;
+	this.findProp = genFinder(path, relBinder);
+	this.bind = function(bindProp,value){
+		//解除原先的属性的绑定
+		if(prop) prop.change(null,onValueChange);
+		//替换新的绑定的属性
+		prop = bindProp;
+		//监听属性变化
+		prop.change(onValueChange);
+		
+	}
+}
+
+var Container1 = function(path,parentContainer){
+	var model,self = this;
+	this.path = path;
+	if(parentContainer){
+		this.$ = parentContainer;
+		this.$$ = parentContainer.$$;
+		var findModel = this.model = function(){
+			var routes = parentContainer.path(path);
+			if(!routes) return ;//没找到绑定到这个container的数据
+			var change = function(val,old,isnew){
+				//链上的属性发生变化，需要重新绑定
+				self.model = findModel;
+				//把自己从链上的监听摘除掉，这个链的属性已经不再跟这些元素绑定了。
+				//这里的this是链上的属性
+				this.change(null,change);
+				//通知绑定到这个container上的元素解除绑定，重新绑定
+				update();
+			};
+			for(var i=0,j=routes.length;i<j;i++){
+				var route = routes[i];
+				//链上添加监听，重置Container.model函数
+				route.prop.change(change);
+			}
+		}
+	}else{
+		this.$$ = this;
+		this.model = function(val){
+			if(val===undefined) return model;
+			model = val;
+			//通知绑定到这个container上的元素解除绑定，重新绑定
+			update();
+		}
+	}
+	
+	this.path = function(path){
+		var paths = path.split("."),routes = [];
+		var name ,container = this;
+		while(name=paths.shift()){
+			if(name=='$$') {container = container.$$;continue;}
+			if(name=='$'){container = container.$;continue;}
+			paths.unshift(name);break;
+		}
+		if(!container) return;
+		var model = container.model();
+		return model?propByPath(paths,model,routes):null;
+	}
+	var onUpdate=fnCluster();
+	//注册更新通知
+	this.update=  function(func,remove){
+		if(func===null) {
+			if(remove)onUpdate.remove(remove);
+			else onUpdate.clear();
+			return this;
+		}
+		onUpdate.add(func);
+		return this;
+	} 
+	var tick;
+	var update = function(){
+		if(tick) clearTimeout(tick);
+		setTimeout(function(){
+			onUpdate.call(self);
+		},0);//要等链条上的所有事件都解除绑定了再一次性通知
+		
+	}
+}
+
+var propByPath = function(paths,model,routes){
+	//第一个取出来
+	var name = pathInfo.shift();
+	if(name===undefined) return null;
+	var prop = model[name];
+	if(!prop) return null;
+	routes.push({
+		name : name,
+		prop : prop
+	});
+	if(paths.length==0) return routes;
+	var subModel = $M(prop.getValue());
+	
+	return subModel?propByPath(paths,subModel,routes):null;
+}
+
+
+})(window,document);
+</script>
+</head>
+<body>
+</body>
+</html>

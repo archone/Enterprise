@@ -1,0 +1,82 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript" src="jquery.js"></script>
+	<script type="text/javascript" src="assert.js"></script>
+	<script type="text/javascript" src="model.js"></script>
+<script type="text/javascript">
+
+(function(window,document,undefined){
+
+$A.show("full");
+
+
+$A.tab();
+var user = {
+	id: 13,
+	Signname : "yiy"
+};
+$A.operation("Create an object : " + JSON.stringify(user));
+var userM = $M(user);
+$A.operation("Create Model : userM = " + userM[$M].toString());
+$A.text("\n=========Basic read/write===========");
+userM.id(12);
+$A.operation("userM.id(12)");
+$A.EQ(12,userM.id(),"userM.id()===12");
+$A.EQ(12,user.id,"user.id===12");
+
+userM.id.setValue(14);
+$A.operation("userM.id.setValue(14)");
+$A.EQ(14,userM.id.getValue(),"userM.id.getValue()===14");
+$A.EQ(14,user.id,"user.id===14");
+
+userM.id[$M].setValue(20);
+$A.operation("userM.id[$M].setValue(20)");
+$A.EQ(20,userM.id[$M].getValue(),"userM.id[$M].getValue()===20");
+$A.EQ(20,user.id,"user.id===20");
+
+userM[$M].setValue("id",15);
+$A.operation("userM[$M].setValue(\"id\",15);");
+$A.EQ(15,userM[$M].getValue("id"),"userM[$M].getValue(\"id\")===15");
+$A.EQ(15,user.id,"user.id===15");
+
+$A.text("\n=========add/remove prop listen===========");
+var catched,oldValue,newValue;
+var idListener;
+$A.operation(function(){
+	idListener = function(val,old){
+		catched = true;oldValue = old;newValue = val;
+	}
+});
+$A.operation(function(){user.id = 0;});
+$A.operation(function(){userM.id.change(idListener);});
+$A.operation(function(){userM.id(33);});
+$A.EQ(true,catched,"in idListener");
+$A.EQ(33,newValue,"newValue ===33");
+$A.EQ(0,oldValue,"oldValue ===0");
+
+$A.operation(function(){userM.id.change(null,idListener);});
+$A.operation(function(){catched = false;});
+$A.operation(function(){userM.id(32);});
+$A.EQ(false,catched,"idListener no more triggled");
+
+$A.text("-----------------------");
+$A.operation(function(){user.id = 0;});
+$A.operation(function(){userM.id[$M].change(idListener);});
+$A.operation(function(){userM.id(33);});
+$A.EQ(true,catched,"in idListener");
+$A.EQ(33,newValue,"newValue ===33");
+$A.EQ(0,oldValue,"oldValue ===0");
+
+$A.operation(function(){userM.id[$M].change(null,idListener);});
+$A.operation(function(){catched = false;});
+$A.operation(function(){userM.id(32);});
+$A.EQ(false,catched,"idListener no more triggled");
+})(window,document);
+</script>
+</head>
+<body>
+</body>
+</html>
